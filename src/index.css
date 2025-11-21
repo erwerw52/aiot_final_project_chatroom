@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+html, body, #root { height: 100%; }
+body { font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+
+/* Scrollbar styling for the chat area to look subtle */
+.chat-scroll::-webkit-scrollbar { height: 10px; width: 8px; }
+.chat-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
