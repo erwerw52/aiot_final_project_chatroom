@@ -7,7 +7,7 @@ function App() {
   const { messages, isTyping, sendMessage } = useChat();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="fixed inset-0 overflow-hidden">
       <BackgroundSlider />
       <Header />
       <ChatContainer messages={messages} isTyping={isTyping} onSendMessage={sendMessage} />

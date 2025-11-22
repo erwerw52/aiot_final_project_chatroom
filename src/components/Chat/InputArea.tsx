@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Mic, MicOff } from 'lucide-react';
+import { Mic, MicOff, Send } from 'lucide-react';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 
 interface InputAreaProps {
@@ -20,6 +20,8 @@ const InputArea = ({ onSendMessage }: InputAreaProps) => {
       setInput('');
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
+        // Close keyboard on mobile
+        textareaRef.current.blur();
       }
     }
   };
@@ -81,7 +83,16 @@ const InputArea = ({ onSendMessage }: InputAreaProps) => {
           rows={1}
           className="w-full pl-6 pr-14 py-4 text-gray-700 placeholder-gray-400 bg-transparent border-none focus:ring-0 focus:outline-none text-lg resize-none max-h-[168px] overflow-y-auto"
         />
-        <div className="absolute right-2 bottom-2 flex items-center gap-2 pb-1 pr-1">
+        <div className="absolute right-2 bottom-2 flex items-center gap-1 pb-1 pr-1">
+          {input.trim() && (
+            <button
+              onClick={handleSend}
+              className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+              aria-label="send message"
+            >
+              <Send size={24} />
+            </button>
+          )}
           <button
             onClick={toggleListening}
             className={`p-2 transition-colors rounded-full ${

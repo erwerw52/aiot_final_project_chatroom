@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
 html, body, #root { height: 100%; }
-body { font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+body { 
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; 
+  overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
 /* Scrollbar styling for the chat area to look subtle */
 .chat-scroll::-webkit-scrollbar { height: 10px; width: 8px; }
