@@ -4,13 +4,13 @@ import ChatContainer from './components/Chat/ChatContainer';
 import { useChat } from './hooks/useChat';
 
 function App() {
-  const { messages, sendMessage } = useChat();
+  const { messages, isTyping, sendMessage } = useChat();
 
   return (
     <div className="relative min-h-screen">
       <BackgroundSlider />
       <Header />
-      <ChatContainer messages={messages} onSendMessage={sendMessage} />
+      <ChatContainer messages={messages} isTyping={isTyping} onSendMessage={sendMessage} />
     </div>
   );
 }

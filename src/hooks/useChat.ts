@@ -30,7 +30,7 @@ export const useChat = () => {
       };
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
-    }, 2000);
+    }, 3000);
   };
 
   return {
