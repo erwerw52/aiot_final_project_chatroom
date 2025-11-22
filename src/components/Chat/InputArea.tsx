@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Mic, MicOff, Send } from 'lucide-react';
+import { Mic, Square, Send } from 'lucide-react';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 
 interface InputAreaProps {
@@ -27,14 +27,9 @@ const InputArea = ({ onSendMessage }: InputAreaProps) => {
   };
 
   useEffect(() => {
-    if (wasListening.current && !isListening) {
-      // 剛結束錄音，如果有內容則自動發送
-      if (input.trim()) {
-        handleSend();
-      }
-    }
+    // 移除自動發送邏輯，因為現在是手動停止模式，使用者可能還想編輯
     wasListening.current = isListening;
-  }, [isListening, input]); // 依賴 input 以確保發送最新內容
+  }, [isListening]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -84,7 +79,7 @@ const InputArea = ({ onSendMessage }: InputAreaProps) => {
           className="w-full pl-6 pr-14 py-4 text-gray-700 placeholder-gray-400 bg-transparent border-none focus:ring-0 focus:outline-none text-lg resize-none max-h-[168px] overflow-y-auto"
         />
         <div className="absolute right-2 bottom-2 flex items-center gap-1 pb-1 pr-1">
-          {input.trim() && (
+          {input.trim() && !isListening && (
             <button
               onClick={handleSend}
               className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
@@ -102,7 +97,7 @@ const InputArea = ({ onSendMessage }: InputAreaProps) => {
             }`}
             aria-label={isListening ? "stop voice" : "start voice"}
           >
-            {isListening ? <MicOff size={24} /> : <Mic size={24} />}
+            {isListening ? <Square size={24} className="fill-current" /> : <Mic size={24} />}
           </button>
         </div>
       </div>

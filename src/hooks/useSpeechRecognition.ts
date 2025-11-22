@@ -3,15 +3,15 @@ import { useState, useRef, useCallback } from 'react';
 export const useSpeechRecognition = () => {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const silenceTimerRef = useRef<number | null>(null);
+  const watchdogTimerRef = useRef<number | null>(null);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
-    if (silenceTimerRef.current) {
-      window.clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = null;
+    if (watchdogTimerRef.current) {
+      window.clearTimeout(watchdogTimerRef.current);
+      watchdogTimerRef.current = null;
     }
     setIsListening(false);
   }, []);
@@ -22,9 +22,10 @@ export const useSpeechRecognition = () => {
       return;
     }
 
-    // 如果正在監聽，則先停止
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+    // 如果正在監聽，則執行停止（Toggle 行為）
+    if (isListening) {
+      stopListening();
+      return;
     }
 
     const recognition = new webkitSpeechRecognition();
@@ -32,23 +33,23 @@ export const useSpeechRecognition = () => {
     recognition.interimResults = true;
     recognition.lang = 'zh-TW';
 
-    const resetSilenceTimer = () => {
-      if (silenceTimerRef.current) {
-        window.clearTimeout(silenceTimerRef.current);
+    // 防呆機制：只有在極長時間（例如 10 秒）完全沒聲音才自動停，避免忘記關
+    const resetWatchdog = () => {
+      if (watchdogTimerRef.current) {
+        window.clearTimeout(watchdogTimerRef.current);
       }
-      // 2秒無聲自動停止
-      silenceTimerRef.current = window.setTimeout(() => {
+      watchdogTimerRef.current = window.setTimeout(() => {
         recognition.stop();
-      }, 2000);
+      }, 10000); // 10秒無聲才停
     };
 
     recognition.onstart = () => {
       setIsListening(true);
-      resetSilenceTimer();
+      resetWatchdog();
     };
 
     recognition.onresult = (event) => {
-      resetSilenceTimer();
+      resetWatchdog();
       
       // 取得目前為止的所有辨識結果
       const currentTranscript = Array.from(event.results)
@@ -60,20 +61,23 @@ export const useSpeechRecognition = () => {
 
     recognition.onend = () => {
       setIsListening(false);
-      if (silenceTimerRef.current) {
-        window.clearTimeout(silenceTimerRef.current);
-        silenceTimerRef.current = null;
+      if (watchdogTimerRef.current) {
+        window.clearTimeout(watchdogTimerRef.current);
+        watchdogTimerRef.current = null;
       }
     };
 
     recognition.onerror = (event) => {
       console.error('語音辨識錯誤:', event.error);
-      stopListening();
+      // 忽略 'no-speech' 錯誤，因為在手動模式下這很常見
+      if (event.error !== 'no-speech') {
+        stopListening();
+      }
     };
 
     recognitionRef.current = recognition;
     recognition.start();
-  }, [stopListening]);
+  }, [isListening, stopListening]);
 
   return {
     isListening,
