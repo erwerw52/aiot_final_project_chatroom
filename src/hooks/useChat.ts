@@ -23,13 +23,34 @@ export const useChat = () => {
 
     // Mock API call
     setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `您說：${text}。這是模擬回應。`,
-        isUser: false,
-      };
-      setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
+      const fullText = `您說：${text}。這是模擬回應。`;
+      const botMessageId = (Date.now() + 1).toString();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: botMessageId,
+          text: '',
+          isUser: false,
+        },
+      ]);
+
+      let charIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (charIndex < fullText.length) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === botMessageId
+                ? { ...msg, text: fullText.slice(0, charIndex + 1) }
+                : msg
+            )
+          );
+          charIndex++;
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 50);
     }, 3000);
   };
 
