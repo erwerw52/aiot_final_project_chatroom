@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import InputArea from './InputArea';
 
@@ -14,6 +15,16 @@ interface ChatContainerProps {
 }
 
 const ChatContainer = ({ messages, isTyping, onSendMessage }: ChatContainerProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-end z-20 px-4 pb-6 md:pb-10">
       <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-7xl h-[60vh] flex flex-col">
@@ -30,6 +41,7 @@ const ChatContainer = ({ messages, isTyping, onSendMessage }: ChatContainerProps
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* 輸入區域 */}
